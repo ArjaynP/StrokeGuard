@@ -39,9 +39,59 @@ class StrokeNet(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+
+class StrokeNetLegacy(nn.Module):
+    def __init__(self, input_dim):
+        super(StrokeNetLegacy, self).__init__()
+        self.network = nn.Sequential(
+            nn.Linear(input_dim, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+
+            nn.Linear(128, 64),
+            nn.BatchNorm1d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+
+            nn.Linear(64, 32),
+            nn.ReLU(),
+
+            nn.Linear(32, 1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return self.network(x)
+
+
+def load_compatible_model(input_dim, checkpoint_path):
+    state_dict = torch.load(checkpoint_path, weights_only=True, map_location='cpu')
+    candidates = [
+        ("current", StrokeNet(input_dim)),
+        ("legacy", StrokeNetLegacy(input_dim))
+    ]
+
+    for label, candidate in candidates:
+        try:
+            candidate.load_state_dict(state_dict)
+            print(f"Loaded checkpoint with {label} architecture")
+            return candidate
+        except RuntimeError:
+            continue
+
+    raise RuntimeError(
+        "Could not load checkpoint with supported architectures. "
+        "Retrain model or update evaluate.py architecture to match the saved checkpoint."
+    )
+
 metadata  = joblib.load('model/model_metadata.pkl')
-model     = StrokeNet(metadata['input_dim'])
-model.load_state_dict(torch.load('model/stroke_model.pt', weights_only=True))
+model     = load_compatible_model(metadata['input_dim'], 'model/stroke_model.pt')
 model.eval()
 
 # ── Run inference ────────────────────────────────────────────────────
@@ -51,8 +101,10 @@ with torch.no_grad():
 
 # Try multiple thresholds, pick best F1
 best_thresh, best_f1 = 0.5, 0
-for t in np.arange(0.1, 0.9, 0.05):
+for t in np.arange(0.05, 0.95, 0.01):
     preds = (probs >= t).astype(int)
+    if preds.sum() == 0:
+        continue
     f1 = f1_score(y_test, preds, zero_division=0)
     if f1 > best_f1:
         best_f1, best_thresh = f1, t

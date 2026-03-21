@@ -30,10 +30,15 @@ class StrokeNet(nn.Module):
     def __init__(self, input_dim):
         super(StrokeNet, self).__init__()
         self.network = nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(input_dim, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(),
+            nn.Dropout(0.4),
+
+            nn.Linear(256, 128),
             nn.BatchNorm1d(128),
             nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.Dropout(0.4),
 
             nn.Linear(128, 64),
             nn.BatchNorm1d(64),
@@ -57,14 +62,14 @@ print(f"Input features: {input_dim}")
 
 # ── Loss & Optimizer ─────────────────────────────────────────────────
 # Class weights to further handle imbalance
-pos_weight = torch.tensor([y_train.tolist().count(0) / y_train.tolist().count(1)])
-criterion  = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
-optimizer  = torch.optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-4)
-scheduler  = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
+# pos_weight = torch.tensor([y_train.tolist().count(0) / y_train.tolist().count(1)]) --- removing pos_weight as SMOTE already handles balance.
+criterion = nn.BCELoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-4, weight_decay=1e-3)
+scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience=5, factor=0.5)
 
 # ── Training Loop ────────────────────────────────────────────────────
-EPOCHS        = 100
-PATIENCE      = 15
+EPOCHS        = 150
+PATIENCE      = 10
 best_val_loss = float('inf')
 patience_ctr  = 0
 train_losses  = []
