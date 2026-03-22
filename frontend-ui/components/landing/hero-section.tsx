@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ArrowRight, ChevronDown } from 'lucide-react'
+import { ArrowRight, Brain, ChevronDown } from 'lucide-react'
 
 export function HeroSection() {
   const scrollToHowItWorks = () => {
@@ -28,7 +28,12 @@ export function HeroSection() {
       </div>
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-        <div className="animate-fade-in-up">
+        {/* Background brain icon */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none" aria-hidden="true">
+          <Brain className="w-[600px] h-[600px] text-primary opacity-[0.04]" strokeWidth={0.5} />
+        </div>
+
+        <div className="relative animate-fade-in-up">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm text-primary mb-8">
             <span className="relative flex h-2 w-2">
