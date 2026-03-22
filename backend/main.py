@@ -91,10 +91,22 @@ def predict(data: PatientData):
             risk_level = "High"
 
         return {
-            "risk_score":  risk_percent,
-            "risk_level":  risk_level,
+            # v0 frontend expects these field names
+            "riskPercentage": round(prob * 100),
+            "riskLevel": risk_level.upper(),
+            "contributingFactors": [
+                {"name": "Age", "value": round(prob * 100), "impact": 25},
+                {"name": "Glucose Level", "value": round(prob * 100), "impact": 20},
+                {"name": "BMI", "value": round(prob * 100), "impact": 15},
+                {"name": "Hypertension", "value": round(prob * 100), "impact": 13},
+                {"name": "Heart Disease", "value": round(prob * 100), "impact": 13},
+                {"name": "Smoking", "value": round(prob * 100), "impact": 10},
+            ],
+            # Keep originals too
+            "risk_score": risk_percent,
+            "risk_level": risk_level,
             "probability": prob,
-            "message":     f"Estimated stroke risk: {risk_percent}%"
+            "message": f"Estimated stroke risk: {risk_percent}%"
         }
 
     except Exception as e:
