@@ -54,7 +54,7 @@ export function RiskFactorsChart({ factors, riskLevel }: RiskFactorsChartProps) 
             <XAxis 
               type="number" 
               domain={[0, 100]}
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+              tick={{ fill: '#ffffff', fontSize: 12 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               tickLine={{ stroke: 'hsl(var(--border))' }}
             />
@@ -62,7 +62,7 @@ export function RiskFactorsChart({ factors, riskLevel }: RiskFactorsChartProps) 
               dataKey="name" 
               type="category" 
               width={100}
-              tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }}
+              tick={{ fill: '#ffffff', fontSize: 12 }}
               axisLine={{ stroke: 'hsl(var(--border))' }}
               tickLine={false}
             />
