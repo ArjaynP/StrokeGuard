@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: 'StrokeGuard | ML-Powered Stroke Risk Assessment',
   description: 'StrokeGuard uses a custom-trained neural network to assess your stroke risk based on clinical and lifestyle factors. Early detection saves lives.',
   keywords: ['stroke', 'risk assessment', 'machine learning', 'health', 'medical', 'AI'],
+  icons: {
+    apple: '/apple-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
