@@ -2,3 +2,5 @@ numpy<2
 torch==2.2.2
 joblib
 matplotlib
+seaborn
+scikit-learn
